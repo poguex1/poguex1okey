@@ -131,6 +131,10 @@ background:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px) 0 0/100% 
 .seg button{flex:1;border:0;border-radius:10px;padding:10px 6px;background:transparent;color:#f3ecd8;font-weight:700;cursor:pointer}
 .seg button.on{background:var(--gold);color:#2a1d05}
 .seg button:disabled{opacity:.6;cursor:default}
+.ver{text-align:center;font-size:11px;opacity:.5;margin:14px 0 0}
+.xbtn{left:auto;right:1.2cqw}
+.xov .win{width:min(88%,52cqw)}.xov .wb{margin-top:2cqw;justify-content:center;gap:2cqw}
+.xov .mb2{font-size:max(13px,2.4cqw);padding:1cqw 3cqw}
 .sbtn{left:calc(max(32px,5.2cqw) + 2.4cqw)}
 /* dikey ekran: tam boy yerleşim, 3 sıra ıstaka */
 @media (max-aspect-ratio:3/4){
@@ -157,6 +161,7 @@ background:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px) 0 0/100% 
 .wbn{top:13cqw;max-width:58cqw;padding:1.6cqw 4cqw}.wbn b{font-size:max(15px,5cqw)}.wbn small{font-size:max(11px,3cqw)}
 .mb2{font-size:max(12px,3.4cqw);padding:1.4cqw 3.4cqw}
 .sbtn{left:calc(max(34px,8.5cqw) + 3cqw)}
+.xov .win{width:88%}.xov .mb2{font-size:max(14px,4cqw);padding:2cqw 5cqw}
 }
 </style>
 </head>
@@ -174,7 +179,8 @@ const NAMES=["Ayşe","Mehmet","Zeynep","Ali","Elif","Can","Selin","Burak","Defne
 const COL=["#c28f10","#1f5fbf","#1b1b1b","#c62828"];
 const LINK="https://claude.ai/artifact/KruK8P37dpg5heEPHwkXYe";
 const NS=24;
-let lv=0,wasMine=false,doneSeen=false,muted=false,AC=null;
+const APP_VERSION="0.3.1";
+let lv=0,wasMine=false,doneSeen=false,muted=false,AC=null,confirmExit=false;
 const $=id=>document.getElementById(id);
 const cl=o=>JSON.parse(JSON.stringify(o));
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -226,7 +232,14 @@ function needName(){if($("nm").value.trim())return false;const n=$("nm");n.focus
 function soloGame(){if(needName())return;S={ver:2,lv,phase:"lobby",host:me,seats:[{k:"h",u:me,n:nm()},{k:"e"},{k:"e"},{k:"e"}],v:0};deal()}
 function newTable(){if(needName())return;S={ver:2,lv,phase:"lobby",host:me,seats:[{k:"h",u:me,n:nm()},{k:"e"},{k:"e"},{k:"e"}],v:0};save()}
 function sit(i){if(needName())return;S=cl(S);S.seats[i]={k:"h",u:me,n:nm()};save()}
-function closeTable(){S=null;lastK="x";render();ref.delete().catch(()=>{})}
+function openExit(){clearTimeout(bt);bt=null;confirmExit=true;render()}
+function closeTable(){
+  clearTimeout(bt);bt=null;confirmExit=false;peek=-1;sel=null;note="";inv="";helpOpen=false;
+  flipped.clear();flipAnim=-1;dealKey=null;lastTap=[-1,0];slots=Array(NS).fill(null);
+  if(drag){if(drag.g)drag.g.remove();drag=null}
+  S=null;lastK="x";render();
+  ref.delete().catch(()=>{});
+}
 async function invite(){
   try{if(navigator.share){await navigator.share({title:"Okey Masası",text:"Okey oynayalım, masaya gel!",url:LINK});return}}catch(e){if(e&&e.name=="AbortError")return}
   try{await navigator.clipboard.writeText(LINK);inv="Bağlantı kopyalandı, arkadaşlarına gönder."}catch(e){inv="Bağlantı: "+LINK}
@@ -240,7 +253,7 @@ function deal(){
   const d=shuffle([...Array(106).keys()]);let g;
   do{g=d.pop();if(g>=104){d.unshift(g);g=-1}}while(g<0);
   const gn=g%13+1;
-  S.g=g;S.ok={r:(g%52/13)|0,n:gn==13?1:gn+1};
+  S.dealId=Date.now().toString(36)+Math.random().toString(36).slice(2,6);S.g=g;S.ok={r:(g%52/13)|0,n:gn==13?1:gn+1};
   S.hands={};S.disc={};
   for(let i=0;i<4;i++){S.hands[i]=[];S.disc[i]=[];for(let j=0;j<(i?14:15);j++)S.hands[i].push(d.pop())}
   S.deck=d;S.turn=0;S.step="discard";S.win=-1;S.fin=-1;S.phase="play";slots=Array(NS).fill(null);save();
@@ -340,7 +353,7 @@ function place(id,j){
   if(slots[j]!=null){let best=-1,bd=99;slots.forEach((x,k)=>{if(x==null&&Math.abs(k-j)<bd){bd=Math.abs(k-j);best=k}});j=best}
   if(j>=0)slots[j]=id;
 }
-function cek(j,left){if(!myTurn()||S.step!="draw"||!S.deck.length)return;put(S.deck[S.deck.length-1],j,left,-1);S=cl(S);S.hands[mySeat].push(S.deck.pop());S.step="discard";note="";snd("draw");save()}
+function cek(j,left){if(!myTurn()||S.step!="draw")return;if(!S.deck.length){S=cl(S);S.phase="done";S.win=-2;save();return}put(S.deck[S.deck.length-1],j,left,-1);S=cl(S);S.hands[mySeat].push(S.deck.pop());S.step="discard";note="";snd("draw");save()}
 function al(j,left){if(!myTurn()||S.step!="draw"||!S.disc[prev()].length)return;put(S.disc[prev()].slice(-1)[0],j,left,-1);S=cl(S);S.hands[mySeat].push(S.disc[prev()].pop());S.step="discard";note="";snd("draw");save()}
 function secili(){
   if(!myTurn()){note="Sıra sende değil.";snd("err");render();return null}
@@ -415,11 +428,11 @@ function pickDiscard(h,lvl){
   return best;
 }
 function botCheck(){
-  if(!S||S.phase!="play"||S.host!==me||bt||S.seats[S.turn].k!="b")return;
+  if(!S||S.phase!="play"||S.host!==me||bt||confirmExit||S.seats[S.turn].k!="b")return;
   bt=setTimeout(()=>{bt=null;botMove()},[1100,1400,1700][S.lv||0]);
 }
 function botMove(){
-  if(!S||S.phase!="play"||S.host!==me||S.seats[S.turn].k!="b")return;
+  if(!S||S.phase!="play"||S.host!==me||confirmExit||S.seats[S.turn].k!="b")return;
   S=cl(S);const s=S.turn,h=S.hands[s];
   const lvl=S.lv||0;
   if(h.length==14){
@@ -452,13 +465,13 @@ function render(){
   if(drag&&drag.moved)return;
   if(helpOpen){scr("help");app.innerHTML=helpHtml();on("hx",()=>{helpOpen=false;render()});return}
   if(!S||S.ver!==2){
-    scr("menu");inLobby=true;wasMine=doneSeen=false;
-    app.innerHTML=`${segHtml()}<div class="menu"><button class="mbtn" id="m1"><span class="mi">🤖</span><span><b>Botlarla oyna</b><small>Hemen başla, üç bot seninle oynar</small></span></button><button class="mbtn gold" id="m2"${local?" disabled":""}><span class="mi">👥</span><span><b>Arkadaşlarımla oyna</b><small>${local?"Bu dosyada çalışmaz, Claude bağlantısından aç":"Masa kur ve bağlantıyı gönder"}</small></span></button><button class="link" id="m3">Nasıl oynanır?</button><button class="link" id="sm">${sndLabel()}</button></div>`;
+    scr("menu");inLobby=true;wasMine=doneSeen=false;confirmExit=false;
+    app.innerHTML=`${segHtml()}<div class="menu"><button class="mbtn" id="m1"><span class="mi">🤖</span><span><b>Botlarla oyna</b><small>Hemen başla, üç bot seninle oynar</small></span></button><button class="mbtn gold" id="m2"${local?" disabled":""}><span class="mi">👥</span><span><b>Arkadaşlarımla oyna</b><small>${local?"Bu dosyada çalışmaz, Claude bağlantısından aç":"Masa kur ve bağlantıyı gönder"}</small></span></button><button class="link" id="m3">Nasıl oynanır?</button><button class="link" id="sm">${sndLabel()}</button></div><p class="ver">v${APP_VERSION}</p>`;
     bindLv();on("sm",toggleSnd);on("m1",soloGame);on("m2",newTable);on("m3",helpOn);return;
   }
   mySeat=S.seats.findIndex(x=>x.u===me);
   if(S.phase=="lobby"){
-    scr("lobby");inLobby=true;wasMine=doneSeen=false;
+    scr("lobby");inLobby=true;wasMine=doneSeen=false;confirmExit=false;
     const pos=["b","r","t","l"],cnt=S.seats.filter(s=>s.k!="e").length;
     const card=(s,i)=>`<div class="sp ${pos[i]}${s.k=="e"?" empty":""}"><span class="av">${s.k=="e"?"+":ini(s.n)}</span><b>${s.k=="e"?"Boş koltuk":esc(s.n)}</b>${s.u===S.host?"<small>masa sahibi</small>":""}${s.u===me?"<small>sen</small>":""}${s.k=="e"&&mySeat<0?`<button class="sit" data-i="${i}">Otur</button>`:""}</div>`;
     app.innerHTML=`<div class="cross">${S.seats.map(card).join("")}<div class="c"><b>${cnt}/4</b><small>oyuncu</small></div></div>
@@ -469,7 +482,7 @@ function render(){
   scr("play");
   const v=mySeat<0?0:mySeat,R=k=>(v+k)%4,h=S.hands[v]||[];
   let anim=false;
-  if(dealKey!==S.g){anim=inLobby||dealKey!==null;dealKey=S.g;flipped.clear();if(anim)snd("shuffle");known=anim?new Set():new Set(h);seenD=anim?new Set():new Set([0,1,2,3].flatMap(i=>S.disc[i]))}
+  if(dealKey!==S.dealId){anim=inLobby||dealKey!==null;dealKey=S.dealId;flipped.clear();if(anim)snd("shuffle");known=anim?new Set():new Set(h);seenD=anim?new Set():new Set([0,1,2,3].flatMap(i=>S.disc[i]))}
   inLobby=false;
   slots=slots.map(x=>h.includes(x)?x:null);
   h.forEach(x=>{if(!slots.includes(x))slots[slots.indexOf(null)]=x});
@@ -495,7 +508,7 @@ function render(){
   };
   const pl=(i,cls)=>`<div class="edge ${cls}${S.turn==i&&S.phase=="play"?" act":""}"><div class="plate">${esc(S.seats[i].n)}${S.seats[i].k=="b"?" · bot":""}</div><div class="tops">${"<i></i>".repeat(S.hands[i].length)}</div></div>`;
   app.innerHTML=`<div class="stage">
-   <button class="hbtn" id="hp">?</button><button class="hbtn sbtn" id="sb">${muted?"🔇":"🔊"}</button>
+   <button class="hbtn" id="hp">?</button><button class="hbtn sbtn" id="sb">${muted?"🔇":"🔊"}</button>${S.host===me?`<button class="hbtn xbtn" id="xb" aria-label="Ana menü">🏠</button>`:""}
    ${pl(R(2),"etop")}${pl(R(3),"eleft")}${pl(R(1),"eright")}
    ${P(R(2),"ptl")}${P(R(1),"ptr")}${P(R(3),"pbl")}${P(v,"pbr",mySeat>=0)}
    <div class="mid3">
@@ -506,6 +519,7 @@ function render(){
    <div id="msg"${S.phase=="done"?" hidden":""}>${st}${note?" "+esc(note):""}</div>
    ${mySeat<0?`<div class="spec">İzleyicisin</div>`:`<div class="me${myTurn()?" act":""}"><div class="plate">${esc(S.seats[showW?S.win:mySeat].n)}</div></div><div id="rack"${doneW?` class="won"`:""}>${rackHtml}</div>`}
    ${win}
+   ${confirmExit?`<div class="ov xov"><div class="win"><b>Maçı iptal edip ana ekrana dönmek istiyor musun?</b><span class="wb"><button class="mb2" id="xno">Vazgeç</button><button class="mb2 alt" id="xyes">Evet, çık</button></span></div></div>`:""}
    ${peek>=0?`<div class="ov pkov"><div class="win"><b>${esc(S.seats[peek].n)}</b><div class="pk">${S.disc[peek].map(id=>tl(id)).join("")||"Henüz taş atmadı"}</div></div></div>`:""}
   </div>`;
   const nd=[0,1,2,3].reduce((a,i)=>a+S.disc[i].filter(id=>!seenD.has(id)).length,0);
@@ -513,7 +527,7 @@ function render(){
   const mine=myTurn();if(mine&&!wasMine)snd("turn");wasMine=mine;
   if(S.phase=="done"){if(!doneSeen){doneSeen=true;snd(S.win==mySeat?"win":"lose")}}else doneSeen=false;
   flipAnim=-1;known=new Set(h);[0,1,2,3].forEach(i=>S.disc[i].forEach(id=>seenD.add(id)));
-  on("hp",helpOn);on("sb",toggleSnd);on("nw",deal);on("cm",closeTable);
+  on("hp",helpOn);on("sb",toggleSnd);on("nw",deal);on("cm",closeTable);on("xb",openExit);on("xno",()=>{confirmExit=false;render()});on("xyes",closeTable);
   botCheck();
 }
 const appEl=$("app");

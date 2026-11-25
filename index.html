@@ -30,7 +30,7 @@ button{font:inherit}
 .lt:nth-child(odd){transform:rotate(-4deg)}.lt:nth-child(even){transform:rotate(3deg) translateY(2px)}
 .tag{text-align:center;margin:6px 0 12px;opacity:.85;font-size:14px}
 .menu{display:grid;gap:10px}
-.mbtn{display:flex;align-items:center;gap:14px;width:100%;padding:11px 14px;border:0;border-radius:16px;text-align:left;color:#fff4df;cursor:pointer;background:linear-gradient(#a8692f,#7b4b25);box-shadow:0 4px 0 #4e2f12,0 8px 14px rgba(0,0,0,.35);touch-action:manipulation}
+.mbtn{display:flex;align-items:center;gap:14px;width:100%;padding:11px 14px;border:0;border-radius:16px;text-align:left;color:#fff4df;cursor:pointer;background:linear-gradient(#a8692f,#7b4b25);box-shadow:0 4px 0 #4e2f12,0 8px 14px rgba(0,0,0,.35);touch-action:manipulation;transition:transform .14s,filter .14s}
 .mbtn.gold{background:linear-gradient(#f0bd48,#cc8f1c);color:#2a1d05;box-shadow:0 4px 0 #8a5d0c,0 8px 14px rgba(0,0,0,.35)}
 .mbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #4e2f12}
 .mbtn:disabled{opacity:.45;cursor:default}
@@ -38,12 +38,12 @@ button{font:inherit}
 .mi{font-size:24px;width:40px;height:40px;border-radius:12px;background:rgba(0,0,0,.2);display:grid;place-items:center;flex:none}
 .link{background:none;border:0;color:#cfe8d8;font-size:14px;text-decoration:underline;padding:8px;cursor:pointer;justify-self:center}
 .wait{text-align:center;opacity:.85;font-size:14px;margin:0}
-.cross{display:grid;grid-template-columns:1fr 1.1fr 1fr;grid-template-areas:". t ." "l c r" ". b .";gap:10px;margin:0 0 16px;align-items:center}
-.sp{background:linear-gradient(#f6f6f6,#bdbdbd);border:2px solid #8b8b8b;border-radius:14px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;color:#4a2d14;font-size:13px;text-align:center;min-height:96px;justify-content:center;box-shadow:0 4px 8px rgba(0,0,0,.3)}
+.cross{display:grid;grid-template-columns:1fr 1.1fr 1fr;grid-template-areas:". t ." "l c r" ". b .";gap:8px;margin:0;align-items:center}
+.sp{background:linear-gradient(#f6f6f6,#bdbdbd);border:2px solid #8b8b8b;border-radius:14px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:3px;color:#4a2d14;font-size:13px;text-align:center;min-height:84px;justify-content:center;box-shadow:0 4px 8px rgba(0,0,0,.3)}
 .sp.empty{background:rgba(0,0,0,.2);border:2px dashed rgba(255,255,255,.35);color:#f3ecd8;box-shadow:none}
 .sp b{overflow-wrap:anywhere}.sp small{opacity:.7;font-size:11px}
 .sp .sit{padding:6px 14px;border:0;border-radius:10px;background:var(--gold);color:#2a1d05;font-weight:700;cursor:pointer}
-.sp.t{grid-area:t}.sp.l{grid-area:l}.sp.r{grid-area:r}.sp.b{grid-area:b}
+.sp.t{grid-area:t;aspect-ratio:auto}.sp.l{grid-area:l}.sp.r{grid-area:r}.sp.b{grid-area:b}
 .cross .c{grid-area:c;text-align:center}.cross .c b{font-size:30px;display:block}.cross .c small{opacity:.7}
 .av{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--gold);color:#2a1d05;font-weight:800}
 .help{background:var(--card);color:var(--ink);border-radius:16px;padding:16px 18px}
@@ -162,12 +162,28 @@ background:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px) 0 0/100% 
 .avs{display:block;width:100%;height:100%;border-radius:50%}
 .av{overflow:hidden}.av.e{background:rgba(255,255,255,.2);color:#f3ecd8}
 .sp .av{width:44px;height:44px}
-.pbar{display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.28);border:1px solid rgba(224,168,46,.55);border-radius:999px;padding:6px 16px 6px 6px;margin-bottom:12px;color:#f3ecd8;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.25)}
-.pbar .pavr{width:42px;height:42px;border-radius:50%;flex:none;overflow:hidden;box-shadow:0 0 0 2px #e0a82e,0 0 0 4px rgba(224,168,46,.25)}
+.pbar{display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.28);border:1px solid rgba(224,168,46,.55);border-radius:999px;padding:5px 14px 5px 5px;color:#f3ecd8;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.25);flex:1;min-width:0;transition:border-color .15s,background .15s}
+.pbar .pavr{width:40px;height:40px;border-radius:50%;flex:none;overflow:hidden;box-shadow:0 0 0 2px #e0a82e,0 0 0 4px rgba(224,168,46,.25)}
 .pbar .pnm{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2}
-.pbar b{font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pbar b{font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pbar .pst{font-size:12px;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pbar .pen{width:20px;height:20px;color:#e0a82e;flex:none}
+.pbar .pen{width:19px;height:19px;color:#e0a82e;flex:none}
+.topbar{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.tbtn{flex:none;display:inline-flex;align-items:center;justify-content:center;gap:7px;width:50px;height:50px;padding:0;border-radius:50%;background:rgba(0,0,0,.28);border:1px solid rgba(224,168,46,.55);color:#f3ecd8;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.25);touch-action:manipulation;transition:border-color .15s,background .15s,opacity .15s,transform .12s}
+.tbtn svg{width:21px;height:21px;color:#e0a82e;flex:none}
+.tbtn.off{opacity:.52}.tbtn.off svg{color:#cbbd95}
+.tbtn .tlbl{display:none;font-size:13px;font-weight:700;white-space:nowrap}
+.tbtn:active{transform:scale(.95)}
+.grid2{display:flex;flex-direction:column;gap:10px}
+.panel{display:flex;flex-direction:column;gap:10px}
+.phdr{display:none;font-size:12px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:#f3c95b;opacity:.9;margin:0 0 2px}
+.mstat{display:none;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px}
+.mstat span{display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.24);border:1px solid rgba(224,168,46,.28);border-radius:12px;padding:10px 4px}
+.mstat b{font-size:21px;color:#f6cb5c;line-height:1.15}
+.mstat small{font-size:11px;opacity:.75;margin-top:2px}
+.dbtn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:11px 14px;border-radius:14px;background:rgba(165,32,32,.32);border:1.5px solid rgba(255,118,110,.58);color:#ffe0dc;font-weight:800;font-size:15px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.25);touch-action:manipulation;transition:background .15s,border-color .15s,transform .12s}
+.dbtn svg{width:19px;height:19px;color:#ff8a80;flex:none}
+.dbtn:active{transform:translateY(2px)}
 .lrow{display:flex;justify-content:center;gap:18px}
 .pstat{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:rgba(138,84,41,.1);border:1px solid rgba(138,84,41,.3);border-radius:12px;padding:8px 4px;margin:-4px 0 14px;color:#4a2d14}
 .pstat span{display:flex;flex-direction:column;align-items:center;font-size:11px;opacity:.85}
@@ -192,9 +208,13 @@ background:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px) 0 0/100% 
 .jbar button{border:0;border-radius:10px;padding:0 18px;background:linear-gradient(#f0bd48,#cc8f1c);color:#2a1d05;font-weight:800;font-size:15px;cursor:pointer;box-shadow:0 3px 0 #8a5d0c;touch-action:manipulation}
 .jbar button:active{transform:translateY(2px);box-shadow:0 1px 0 #8a5d0c}
 .jbar button:disabled,.jbar input:disabled{opacity:.45;cursor:default}
-.rcode{display:flex;align-items:center;justify-content:center;gap:12px;background:rgba(0,0,0,.32);border:1.5px solid var(--gold);border-radius:14px;padding:8px 16px;margin-bottom:12px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.25)}
-.rcode small{font-size:11px;letter-spacing:1.2px;opacity:.8;font-weight:700}
-.rcode b{font-size:28px;letter-spacing:6px;color:#f6cb5c;line-height:1;font-variant-numeric:tabular-nums}
+.rcode{display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(0,0,0,.32);border:1.5px solid var(--gold);border-radius:14px;padding:9px 12px;margin-bottom:2px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.25);transition:background .15s,border-color .15s}
+.rcode small{font-size:11px;letter-spacing:1.2px;opacity:.8;font-weight:700;white-space:nowrap}
+.rcode b{font-size:26px;letter-spacing:5px;color:#f6cb5c;line-height:1;font-variant-numeric:tabular-nums}
+.rcode .rcic{display:inline-flex;align-items:center;gap:4px;margin-left:auto;padding:5px 9px;border-radius:9px;background:rgba(224,168,46,.16);border:1px solid rgba(224,168,46,.42);color:#f6cb5c;font-size:12px;font-weight:700;white-space:nowrap}
+@media (max-width:390px){.rcode .rcic span{display:none}.rcode .rcic{padding:6px}.rcode b{font-size:23px;letter-spacing:4px}}
+.rcode .rcic svg{width:15px;height:15px;flex:none}
+.toast{text-align:center;font-size:13px;color:#f9e6b3;background:rgba(224,168,46,.16);border:1px solid rgba(224,168,46,.4);border-radius:10px;padding:7px 10px;margin:0}
 .pprev{position:relative;width:96px;margin:0 auto 14px}
 .pbig{width:96px;height:96px;border-radius:50%;box-shadow:0 0 0 3px #e0a82e,0 4px 10px rgba(0,0,0,.3)}
 .dice{position:absolute;right:-14px;bottom:-4px;width:40px;height:40px;padding:0;border:0;border-radius:50%;background:#e0a82e;font-size:21px;line-height:1;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.35)}
@@ -250,6 +270,38 @@ background:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px) 0 0/100% 
 .xov .win{width:88%}.xov .mb2{font-size:max(14px,4cqw);padding:2cqw 5cqw}
 .etop .pav{width:5.6cqw;height:5.6cqw;margin-right:1.4cqw}.me .pav{width:5cqw;height:5cqw;margin-right:1.2cqw}
 }
+/* masaüstü (PC) menü & lobi 2 sütunlu kahvehane paneli */
+@media (min-width:780px){
+body.wide main{max-width:900px;padding:20px 24px 26px}
+body.wide #head{display:flex;align-items:center;justify-content:center;gap:14px;margin:0 0 16px}
+body.wide .logo{margin:0;gap:6px}
+body.wide .lt{width:38px;font-size:21px;border-radius:6px}
+body.wide .lt i{width:6px;height:6px;margin-top:3px}
+body.wide .tag{margin:0;font-size:15px;text-align:left}
+.topbar{gap:10px;margin-bottom:16px}
+.tbtn{width:auto;height:52px;padding:0 16px;border-radius:999px}
+.tbtn .tlbl{display:inline}
+.grid2{display:grid;grid-template-columns:1.12fr .88fr;gap:18px;align-items:stretch}
+.grid2.lob{grid-template-columns:1.05fr .95fr}
+.panel{background:rgba(0,0,0,.22);border:1px solid rgba(224,168,46,.34);border-radius:20px;padding:18px;box-shadow:0 10px 26px rgba(0,0,0,.24);gap:12px}
+.phdr{display:block}
+.mstat{display:grid}
+.panel .seghd{text-align:left;margin:10px 0 5px 4px}
+.panel .seghd:first-child{margin-top:2px}
+.panel .seg{margin-bottom:4px}
+.panel .seg.sm{margin-top:0;margin-bottom:0}
+.grid2.lob .cross{margin:auto 0;gap:12px}
+.grid2.lob .sp{min-height:102px;padding:10px 8px}
+.grid2.lob .dbtn{margin-top:auto}
+.ver{margin-top:14px}
+}
+@media (hover:hover){
+.pbar:hover,.tbtn:hover,.rcode:hover{border-color:var(--gold);background:rgba(0,0,0,.4)}
+.mbtn:not(:disabled):hover{transform:translateY(-2px);filter:brightness(1.06)}
+.jbar button:not(:disabled):hover{filter:brightness(1.07)}
+.seg button:not(:disabled):not(.on):hover{background:rgba(255,255,255,.09)}
+.dbtn:hover{background:rgba(195,38,38,.45);border-color:#ff8a80;transform:translateY(-1px)}
+}
 </style>
 </head>
 <body class="menu">
@@ -265,7 +317,7 @@ const FB_CFG = /*__FB_CFG__*/null;
 const NAMES=["Ayşe","Mehmet","Zeynep","Ali","Elif","Can","Selin","Burak","Defne","Emre","Merve","Kerem","Ceren","Onur","Deniz","Ece","Mert","Naz"];
 const COL=["#c28f10","#1f5fbf","#1b1b1b","#c62828"];
 const NS=24;
-const APP_VERSION="0.4.0";
+const APP_VERSION="0.4.1";
 const LOCAL_REF={set:async()=>{},delete:async()=>{}};
 let lv=0,spd=0,wasMine=false,doneSeen=false,muted=false,AC=null,confirmExit=false,tLeft=50,tInt=null,lastEvn=-1;
 const $=id=>document.getElementById(id);
@@ -355,12 +407,22 @@ function bindLogin(){
 }
 async function signOutUser(){
   if(!fbAuth)return;
-  if(roomCode&&S)closeTable();else{unsubRoom();clearRoomState()}
+  if(roomCode&&S)await closeTable();else{unsubRoom();clearRoomState()}
   editProf=false;prof=null;pf=null;menuMsg="";authErr="";joinVal="";pendingRoom="";
   try{await fbAuth.signOut()}catch(e){}
 }
+const IC={
+  sndOn:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  sndOff:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m22 9-6 6m0-6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  help:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.5 9.2a2.6 2.6 0 0 1 5 .8c0 1.8-2.5 2.1-2.5 3.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.1" fill="currentColor"/></svg>',
+  copy:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m-9 0 1 14a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1l1-14M10 11v6M14 11v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  exit:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8M10 12h10m0 0-3.5-3.5M20 12l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+};
 const profCard=()=>`<div class="pbar" id="pedit" role="button" tabindex="0" aria-label="Profili düzenle"><span class="pavr">${avSvg(prof.av)}</span><span class="pnm"><b>${esc(prof.name)}</b><small class="pst">${prof.stats.games} maç · ${prof.stats.wins} galibiyet</small></span><svg class="pen" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19.5 8.5a2 2 0 0 0 0-2.8l-1.2-1.2a2 2 0 0 0-2.8 0L4 16v4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div>`;
-const bindProf=()=>{on("pedit",openProf);const e=$("pedit");if(e)e.onkeydown=k=>{if(k.key=="Enter"||k.key==" "){k.preventDefault();openProf()}}};
+const topBarHtml=()=>`<div class="topbar">${profCard()}<button class="tbtn${muted?" off":""}" id="sm" aria-label="${muted?"Ses kapalı, açmak için dokun":"Ses açık, kapatmak için dokun"}" title="${muted?"Ses Kapalı":"Ses Açık"}">${muted?IC.sndOff:IC.sndOn}<span class="tlbl">${muted?"Ses Kapalı":"Ses Açık"}</span></button><button class="tbtn" id="hp" aria-label="Nasıl oynanır?" title="Nasıl Oynanır">${IC.help}<span class="tlbl">Nasıl Oynanır</span></button></div>`;
+const menuStatHtml=()=>{const s=prof.stats,r=s.games?Math.round(s.wins*100/s.games):0;return `<div class="mstat"><span><b>${s.games}</b><small>Maç</small></span><span><b>${s.wins}</b><small>Galibiyet</small></span><span><b>%${r}</b><small>Oran</small></span><span><b>${s.okeyWins}</b><small>Okeyle</small></span></div>`};
+const bindProf=()=>{on("pedit",openProf);on("sm",toggleSnd);on("hp",helpOn);const e=$("pedit");if(e)e.onkeydown=k=>{if(k.key=="Enter"||k.key==" "){k.preventDefault();openProf()}}};
 function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state=="suspended")AC.resume();return AC}
 function tone(f,d,type,v,when,f2){const a=ac();if(!a||muted)return;const o=a.createOscillator(),g=a.createGain(),s=a.currentTime+(when||0);o.type=type||"sine";o.frequency.setValueAtTime(f,s);if(f2)o.frequency.exponentialRampToValueAtTime(f2,s+d);g.gain.setValueAtTime(v||.15,s);g.gain.exponentialRampToValueAtTime(.0001,s+d);o.connect(g);g.connect(a.destination);o.start(s);o.stop(s+d+.03)}
 function noise(d,v,hp,when){const a=ac();if(!a||muted)return;const n=Math.floor(a.sampleRate*d),b=a.createBuffer(1,n,a.sampleRate),x=b.getChannelData(0);for(let i=0;i<n;i++)x[i]=(Math.random()*2-1)*(1-i/n);const s=a.createBufferSource();s.buffer=b;const f=a.createBiquadFilter();f.type="highpass";f.frequency.value=hp;const g=a.createGain();g.gain.value=v;s.connect(f);f.connect(g);g.connect(a.destination);s.start(a.currentTime+(when||0))}
@@ -378,7 +440,6 @@ const SND={
   shuffle(){for(let i=0;i<8;i++)noise(.04,.15,2500,i*.06)}
 };
 function snd(n){try{SND[n]()}catch(e){}}
-const sndLabel=()=>muted?"🔇 Ses kapalı":"🔊 Ses açık";
 function toggleSnd(){muted=!muted;try{localStorage.setItem("okeySes",muted?"0":"1")}catch(e){}if(!muted)snd("pick");render()}
 function segHtml(){const cur=S&&S.ver===2?(S.lv||0):lv,ro=S&&S.ver===2&&S.host!==me,sp=!(S&&S.ver===2)||S.host===me;
   return `<div class="seghd">Bot zorluğu</div><div class="seg">${["Kolay","Orta","Zor"].map((n,i)=>`<button data-lv="${i}"${ro?" disabled":""} class="${cur===i?"on":""}">${n}</button>`).join("")}</div>${sp?`<div class="seghd">Bot hızı</div><div class="seg sm">${["Normal","Hızlı"].map((n,i)=>`<button data-sp="${i}" class="${spd===i?"on":""}">${n}</button>`).join("")}</div>`:""}`}
@@ -499,15 +560,16 @@ function openExit(){clearTimeout(bt);bt=null;timerStop();confirmExit=true;render
 function closeTable(){
   const curS=S,curRef=ref,curCode=roomCode,curSeat=mySeat;
   unsubRoom();clearRoomState();render();
-  if(!curCode||!curS)return;
-  if(curS.host===me){curRef.delete().catch(()=>{});return}
+  if(!curCode||!curS)return Promise.resolve();
+  if(curS.host===me)return curRef.delete().catch(()=>{});
   if(curSeat>=0){
     const next=cl(curS);
     if(next.phase=="lobby")next.seats[curSeat]={k:"e"};
     else{const o=next.seats[curSeat]||{};next.seats[curSeat]={k:"b",n:o.n||"Bot",av:o.av==null?curSeat:o.av}}
     next.v=(next.v||0)+1;
-    curRef.set(next).catch(()=>{});
+    return curRef.set(next).catch(()=>{});
   }
+  return Promise.resolve();
 }
 async function invite(){
   if(!roomCode)return;
@@ -787,7 +849,7 @@ function helpHtml(){return `<div class="help"><h3>Nasıl oynanır?</h3><ol>
 <li>Bot zorluğunu menüden seç: Kolay bot rastgele oynar, Orta bot işine yarayan taşları tutar, Zor bot elini en çok ilerleten hamleyi arar ve senin attığın taşı da alabilir. Bot hızını da Normal ya da Hızlı olarak ayarlayabilirsin.</li>
 <li>Botları masayı kuran kişinin sayfası oynatır, o yüzden masa sahibi sayfayı kapatmasın.</li>
 </ol><button class="mbtn gold" id="hx"><span><b>Tamam</b></span></button></div>`}
-function scr(m){if(m!="play")timerStop();document.body.className=m=="play"?"play":"menu";$("head").hidden=!(m=="menu"||m=="lobby"||m=="login")}
+function scr(m){if(m!="play")timerStop();document.body.className=m=="play"?"play":(m=="menu"||m=="lobby"?"menu wide":"menu");$("head").hidden=!(m=="menu"||m=="lobby"||m=="login")}
 const on=(id,f)=>{if($(id))$(id).onclick=f};
 const helpOn=()=>{helpOpen=true;clearTimeout(bt);bt=null;timerStop();render()};
 function render(){
@@ -800,8 +862,8 @@ function render(){
   if(!S||S.ver!==2){
     scr("menu");inLobby=true;wasMine=doneSeen=false;confirmExit=false;
     const onl=onlineReady();
-    app.innerHTML=`${profCard()}${menuMsg?`<div class="merr">${esc(menuMsg)}</div>`:""}${segHtml()}<div class="menu"><button class="mbtn" id="m1"><span class="mi">🤖</span><span><b>Botlarla oyna</b><small>Hemen başla, üç bot seninle oynar</small></span></button><button class="mbtn gold" id="m2"${!onl||roomBusy?" disabled":""}><span class="mi">🌐</span><span><b>Masa Kur (Online)</b><small>${!onl?"Çevrimdışı modda kullanılamaz":roomBusy?"Masa hazırlanıyor…":"4 haneli oda kodu oluştur ve davet et"}</small></span></button><div class="jbar"><input id="jcode" type="text" inputmode="numeric" maxlength="4" placeholder="Oda kodu (4 hane)" value="${esc(joinVal)}" autocomplete="off"${!onl||roomBusy?" disabled":""}><button id="jgo"${!onl||roomBusy?" disabled":""}>Katıl</button></div><div class="lrow"><button class="link" id="m3">Nasıl oynanır?</button><button class="link" id="sm">${sndLabel()}</button></div></div><p class="ver">v${APP_VERSION}</p>`;
-    bindProf();bindLv();on("sm",toggleSnd);on("m1",soloGame);on("m2",newTable);on("m3",helpOn);
+    app.innerHTML=`${topBarHtml()}${menuMsg?`<div class="merr">${esc(menuMsg)}</div>`:""}<div class="grid2"><div class="panel"><div class="phdr">Oyun Modları</div><div class="menu"><button class="mbtn" id="m1"><span class="mi">🤖</span><span><b>Botlarla oyna</b><small>Hemen başla, üç bot seninle oynar</small></span></button><button class="mbtn gold" id="m2"${!onl||roomBusy?" disabled":""}><span class="mi">🌐</span><span><b>Masa Kur (Online)</b><small>${!onl?"Çevrimdışı modda kullanılamaz":roomBusy?"Masa hazırlanıyor…":"4 haneli oda kodu oluştur ve davet et"}</small></span></button><div class="jbar"><input id="jcode" type="text" inputmode="numeric" maxlength="4" placeholder="Oda kodu (4 hane)" value="${esc(joinVal)}" autocomplete="off"${!onl||roomBusy?" disabled":""}><button id="jgo"${!onl||roomBusy?" disabled":""}>Katıl</button></div></div></div><div class="panel"><div class="phdr">İstatistik & Ayarlar</div>${menuStatHtml()}<div>${segHtml()}</div></div></div><p class="ver">v${APP_VERSION}</p>`;
+    bindProf();bindLv();on("m1",soloGame);on("m2",newTable);
     const jc=$("jcode");
     if(jc){jc.oninput=()=>{jc.value=jc.value.replace(/\D/g,"").slice(0,4);joinVal=jc.value};jc.onkeydown=e=>{if(e.key=="Enter")joinRoom(jc.value)}}
     on("jgo",()=>joinRoom(jc?jc.value:joinVal));
@@ -810,12 +872,11 @@ function render(){
   mySeat=S.seats.findIndex(x=>x.u===me);
   if(S.phase=="lobby"){
     scr("lobby");inLobby=true;wasMine=doneSeen=false;confirmExit=false;
-    const pos=["b","r","t","l"],cnt=S.seats.filter(s=>s.k!="e").length;
+    const pos=["b","r","t","l"],cnt=S.seats.filter(s=>s.k!="e").length,isH=S.host===me;
     const card=(s,i)=>`<div class="sp ${pos[i]}${s.k=="e"?" empty":""}"><span class="av${s.k=="e"?" e":""}">${s.k=="e"?"+":avOf(s,i)}</span><b>${s.k=="e"?"Boş koltuk":esc(s.n)}</b>${s.u===S.host?"<small>masa sahibi</small>":""}${s.u===me?"<small>sen</small>":""}${s.k=="e"&&mySeat<0?`<button class="sit" data-i="${i}">Otur</button>`:""}</div>`;
-    app.innerHTML=`${profCard()}${roomCode?`<div class="rcode" id="rcopy" role="button" tabindex="0" title="Oda kodunu kopyala"><small>ODA KODU</small><b>${esc(roomCode)}</b></div>`:""}<div class="cross">${S.seats.map(card).join("")}<div class="c"><b>${cnt}/4</b><small>oyuncu</small></div></div>
-    ${segHtml()}<div class="menu">${S.host===me?`<button class="mbtn gold" id="go"><span class="mi">▶</span><span><b>Başlat</b><small>${cnt<4?"Boş koltuklara bot gelir":"Masa dolu"}</small></span></button>`:`<p class="wait">Masa sahibinin başlatması bekleniyor…</p>`}${roomCode?`<button class="mbtn" id="iv"><span class="mi">🔗</span><span><b>Arkadaşını davet et</b><small>Oda bağlantısını paylaş veya kopyala</small></span></button>`:""}<div class="lrow"><button class="link" id="hp">Nasıl oynanır?</button><button class="link" id="sm">${sndLabel()}</button></div><button class="link" id="cm">${S.host===me?"Masayı iptal et":"Odadan ayrıl"}</button></div>${inv?`<p class="wait">${esc(inv)}</p>`:""}`;
+    app.innerHTML=`${topBarHtml()}<div class="grid2 lob"><div class="panel">${roomCode?`<div class="rcode" id="rcopy" role="button" tabindex="0" title="Oda kodunu kopyala" aria-label="Oda kodunu kopyala"><small>ODA KODU</small><b>${esc(roomCode)}</b><span class="rcic">${IC.copy}<span>Kopyala</span></span></div>`:""}<div class="cross">${S.seats.map(card).join("")}<div class="c"><b>${cnt}/4</b><small>oyuncu</small></div></div></div><div class="panel"><div class="phdr">Masa Ayarları</div><div>${segHtml()}</div><div class="menu">${isH?`<button class="mbtn gold" id="go"><span class="mi">▶</span><span><b>Başlat</b><small>${cnt<4?"Boş koltuklara bot gelir":"Masa dolu"}</small></span></button>`:`<p class="wait">Masa sahibinin başlatması bekleniyor…</p>`}${roomCode?`<button class="mbtn" id="iv"><span class="mi">🔗</span><span><b>Arkadaşını davet et</b><small>Oda bağlantısını paylaş veya kopyala</small></span></button>`:""}</div>${inv?`<p class="toast">${esc(inv)}</p>`:""}<button class="dbtn" id="cm">${isH?IC.trash:IC.exit}<span>${isH?"Masayı iptal et":"Odadan ayrıl"}</span></button></div></div><p class="ver">v${APP_VERSION}</p>`;
     app.querySelectorAll(".sit").forEach(b=>b.onclick=()=>sit(+b.dataset.i));
-    bindProf();bindLv();on("sm",toggleSnd);on("go",deal);on("iv",invite);on("hp",helpOn);on("cm",closeTable);on("rcopy",copyCode);const rc=$("rcopy");if(rc)rc.onkeydown=k=>{if(k.key=="Enter"||k.key==" "){k.preventDefault();copyCode()}};return;
+    bindProf();bindLv();on("go",deal);on("iv",invite);on("cm",closeTable);on("rcopy",copyCode);const rc=$("rcopy");if(rc)rc.onkeydown=k=>{if(k.key=="Enter"||k.key==" "){k.preventDefault();copyCode()}};return;
   }
   scr("play");
   const v=mySeat<0?0:mySeat,R=k=>(v+k)%4,h=S.hands[v]||[];

@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f3a2a">
 <title>Okey Masası</title>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <style>
 :root{--ink:#1e2a22;--card:#fffaf0;--gold:#e0a82e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -172,6 +175,26 @@ background:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px) 0 0/100% 
 .seg.sm{margin-top:-6px}.seg.sm button{padding:6px;font-size:13px}
 .prof{text-align:center}
 .prof .link{color:#4a2d14}
+.prof .link.out{color:#a12626}
+.vip{background:rgba(0,0,0,.3);border:1.5px solid rgba(224,168,46,.55);border-radius:20px;padding:20px 18px;box-shadow:0 10px 26px rgba(0,0,0,.35)}
+.vip h3{margin:0 0 4px;text-align:center;font-size:21px;color:#f5c854}
+.vip .vsub{margin:0 0 16px;text-align:center;font-size:13px;opacity:.8}
+.vip label{display:block;font-size:12px;font-weight:700;opacity:.85;margin:0 0 5px 4px}
+.vip input{width:100%;border:1.5px solid rgba(243,236,216,.24);background:rgba(0,0,0,.28);color:#fffaf0;font:inherit;font-size:16px;padding:11px 14px;border-radius:12px;outline:none;margin-bottom:12px}
+.vip input:focus{border-color:var(--gold);background:rgba(0,0,0,.38)}
+.vip input::placeholder{color:rgba(243,236,216,.45)}
+.vip .mbtn{margin-top:4px;justify-content:center;text-align:center}
+.verr,.merr{background:rgba(198,40,40,.28);border:1px solid rgba(255,148,140,.55);color:#ffe0dc;border-radius:12px;padding:9px 12px;font-size:13px;text-align:center;margin-bottom:12px}
+.jbar{display:flex;gap:8px;background:rgba(0,0,0,.25);border:1px solid rgba(224,168,46,.35);padding:6px;border-radius:14px}
+.jbar input{flex:1;min-width:0;border:0;background:rgba(255,255,255,.08);color:#fffaf0;font:inherit;font-size:17px;font-weight:800;letter-spacing:4px;text-align:center;border-radius:10px;padding:10px 8px;outline:none}
+.jbar input::placeholder{letter-spacing:0;font-weight:500;font-size:14px;color:rgba(243,236,216,.55)}
+.jbar input:focus{box-shadow:inset 0 0 0 2px var(--gold)}
+.jbar button{border:0;border-radius:10px;padding:0 18px;background:linear-gradient(#f0bd48,#cc8f1c);color:#2a1d05;font-weight:800;font-size:15px;cursor:pointer;box-shadow:0 3px 0 #8a5d0c;touch-action:manipulation}
+.jbar button:active{transform:translateY(2px);box-shadow:0 1px 0 #8a5d0c}
+.jbar button:disabled,.jbar input:disabled{opacity:.45;cursor:default}
+.rcode{display:flex;align-items:center;justify-content:center;gap:12px;background:rgba(0,0,0,.32);border:1.5px solid var(--gold);border-radius:14px;padding:8px 16px;margin-bottom:12px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.rcode small{font-size:11px;letter-spacing:1.2px;opacity:.8;font-weight:700}
+.rcode b{font-size:28px;letter-spacing:6px;color:#f6cb5c;line-height:1;font-variant-numeric:tabular-nums}
 .pprev{position:relative;width:96px;margin:0 auto 14px}
 .pbig{width:96px;height:96px;border-radius:50%;box-shadow:0 0 0 3px #e0a82e,0 4px 10px rgba(0,0,0,.3)}
 .dice{position:absolute;right:-14px;bottom:-4px;width:40px;height:40px;padding:0;border:0;border-radius:50%;background:#e0a82e;font-size:21px;line-height:1;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.35)}
@@ -238,19 +261,22 @@ background:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px) 0 0/100% 
 <div id="app">Bağlanıyor…</div>
 </main>
 <script>
+const FB_CFG = /*__FB_CFG__*/null;
 const NAMES=["Ayşe","Mehmet","Zeynep","Ali","Elif","Can","Selin","Burak","Defne","Emre","Merve","Kerem","Ceren","Onur","Deniz","Ece","Mert","Naz"];
 const COL=["#c28f10","#1f5fbf","#1b1b1b","#c62828"];
-const LINK="https://claude.ai/artifact/KruK8P37dpg5heEPHwkXYe";
 const NS=24;
-const APP_VERSION="0.3.5";
+const APP_VERSION="0.4.0";
+const LOCAL_REF={set:async()=>{},delete:async()=>{}};
 let lv=0,spd=0,wasMine=false,doneSeen=false,muted=false,AC=null,confirmExit=false,tLeft=50,tInt=null,lastEvn=-1;
 const $=id=>document.getElementById(id);
 const cl=o=>JSON.parse(JSON.stringify(o));
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const ini=n=>esc(([...n][0]||"?").toUpperCase());
 const key=d=>d?`${d.v}|${d.phase}|${d.turn}|${d.step}|${d.deck?d.deck.length:0}`:"x";
-let local=false,ref,me,S=null,mySeat=-1,slots=Array(NS).fill(null),sel=null,bt=null,note="",inv="",peek=-1,helpOpen=false;
+let local=false,ref=LOCAL_REF,me=null,S=null,mySeat=-1,slots=Array(NS).fill(null),sel=null,bt=null,note="",inv="",peek=-1,helpOpen=false;
 let known=new Set(),seenD=new Set(),dealKey=null,inLobby=false,drag=null,lastDrag=0,lastK="",flipped=new Set(),flipAnim=-1,lastTap=[-1,0];
+let fbAuth=null,db=null,fbUser=null,authReady=false,authErr="",authBusy=false,loginU="";
+let roomCode="",roomUnsub=null,menuMsg="",roomBusy=false,pendingRoom="",joinVal="";
 const AVS=[
 '<circle cx="24" cy="24" r="24" fill="#ffd166"/><path d="M9 22 11 5 22 13ZM39 22 37 5 26 13Z" fill="#e8892b"/><path d="M12 11 14 17 19 13ZM36 11 34 17 29 13Z" fill="#f7b8c2"/><circle cx="24" cy="27" r="15" fill="#f4a24a"/><circle cx="18.5" cy="25" r="2.2" fill="#222"/><circle cx="29.5" cy="25" r="2.2" fill="#222"/><path d="M22 29h4l-2 2.5Z" fill="#d6336c"/><path d="M21 34q3 2 3 0q0 2 3 0" stroke="#5a2d0c" fill="none" stroke-width="1.2" stroke-linecap="round"/><path d="M14 29 7 28M14 32 7 33M34 29 41 28M34 32 41 33" stroke="#5a2d0c" stroke-width="1"/>',
 '<circle cx="24" cy="24" r="24" fill="#8ecae6"/><ellipse cx="9.5" cy="23" rx="6" ry="11" fill="#7a4a2b"/><ellipse cx="38.5" cy="23" rx="6" ry="11" fill="#7a4a2b"/><circle cx="24" cy="26" r="14" fill="#d9a066"/><ellipse cx="24" cy="32" rx="8" ry="6" fill="#f3d9b1"/><circle cx="18" cy="24" r="2.2" fill="#222"/><circle cx="30" cy="24" r="2.2" fill="#222"/><ellipse cx="24" cy="29.5" rx="3" ry="2.2" fill="#222"/><path d="M24 31.5v3" stroke="#222" stroke-width="1.2"/><path d="M22 35q2 5 4 0Z" fill="#ef476f"/>',
@@ -271,27 +297,67 @@ const avOf=(s,i)=>avSvg(s.av==null?i:s.av);
 const pav=(s,i)=>`<span class="pav">${avOf(s,i)}</span>`;
 let prof=null,pf=null,editProf=false;
 const nst=o=>{o=o||{};const f=x=>Math.max(0,Math.floor(+x)||0);return {games:f(o.games),wins:f(o.wins),okeyWins:f(o.okeyWins)}};
-function storeProf(){try{localStorage.setItem("okeyProfile",JSON.stringify({name:prof.name,avatarId:prof.av,stats:prof.stats,lastDeal:prof.lastDeal||""}))}catch(e){}}
+function saveLocalProf(){if(!prof)return;try{localStorage.setItem("okeyProfile",JSON.stringify({uid:fbUser?me:"",name:prof.name,avatarId:prof.av,stats:prof.stats,lastDeal:prof.lastDeal||""}))}catch(e){}}
+function storeProf(){
+  if(!prof)return;
+  saveLocalProf();
+  if(db&&fbUser)db.collection("profiles").doc(me).set({name:prof.name,avatarId:prof.av,stats:prof.stats,lastDeal:prof.lastDeal||""},{merge:true}).catch(()=>{});
+}
 function openProf(){pf={name:prof.name,av:prof.av};editProf=true;render()}
 function saveProf(){
   const n=pf.name.trim().slice(0,14);
   if(!n){const i=$("pn");i.focus();i.style.borderBottomColor="#c62828";i.placeholder="Önce adını yaz";return}
   prof={name:n,av:pf.av,stats:prof?prof.stats:nst(),lastDeal:prof?prof.lastDeal:""};editProf=false;
   storeProf();try{localStorage.removeItem("okeyName")}catch(e){}
-  if(S&&S.ver===2&&S.phase=="lobby"&&mySeat>=0){S=cl(S);S.seats[mySeat].n=prof.name;S.seats[mySeat].av=prof.av;save()}else render();
+  if(S&&S.ver===2&&S.phase=="lobby"&&mySeat>=0){S=cl(S);S.seats[mySeat].n=prof.name;S.seats[mySeat].av=prof.av;save();return}
+  if(!S&&pendingRoom&&db&&fbUser){const c=pendingRoom;pendingRoom="";joinRoom(c,true);return}
+  render();
 }
 function statBox(){const s=prof.stats,r=s.games?Math.round(s.wins*100/s.games):0;
   return `<div class="pstat"><span><b>${s.games}</b>Maç</span><span><b>${s.wins}</b>Galibiyet</span><span><b>%${r}</b>Oran</span><span><b>${s.okeyWins}</b>Okeyle</span></div>`}
 function profHtml(){
   pf=pf||{name:"",av:Math.random()*AVS.length|0};
-  return `<div class="help prof"><h3>${prof?"Profilini düzenle":"Profilini oluştur"}</h3><div class="pprev"><div class="pbig">${avSvg(pf.av)}</div><button class="dice" id="prnd" aria-label="Rastgele avatar">🎲</button></div><input id="pn" class="pin" maxlength="14" placeholder="Adını yaz" value="${esc(pf.name)}" autocomplete="off">${prof?statBox():""}<div class="agrid">${AVS.map((_,i)=>`<button class="ab${pf.av===i?" on":""}" data-a="${i}" aria-label="Avatar ${i+1}">${avSvg(i)}</button>`).join("")}</div><div class="menu"><button class="mbtn gold" id="psv"><span class="mi">✔</span><span><b>Kaydet</b></span></button>${prof?`<button class="link" id="pcx">Vazgeç</button>`:""}</div></div>`;
+  const acts=prof||fbUser?`<div class="lrow">${prof?`<button class="link" id="pcx">Vazgeç</button>`:""}${fbUser?`<button class="link out" id="pout">Çıkış Yap</button>`:""}</div>`:"";
+  return `<div class="help prof"><h3>${prof?"Profilini düzenle":"Profilini oluştur"}</h3><div class="pprev"><div class="pbig">${avSvg(pf.av)}</div><button class="dice" id="prnd" aria-label="Rastgele avatar">🎲</button></div><input id="pn" class="pin" maxlength="14" placeholder="Adını yaz" value="${esc(pf.name)}" autocomplete="off">${prof?statBox():""}<div class="agrid">${AVS.map((_,i)=>`<button class="ab${pf.av===i?" on":""}" data-a="${i}" aria-label="Avatar ${i+1}">${avSvg(i)}</button>`).join("")}</div><div class="menu"><button class="mbtn gold" id="psv"><span class="mi">✔</span><span><b>Kaydet</b></span></button>${acts}</div></div>`;
 }
 function bindProfScr(){
   const pn=$("pn");pn.oninput=()=>{pf.name=pn.value;pn.style.borderBottomColor=""};
   pn.onkeydown=e=>{if(e.key=="Enter")saveProf()};
   document.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{pf.av=+b.dataset.a;render()});
   on("prnd",()=>{let a;do{a=Math.random()*AVS.length|0}while(a===pf.av);pf.av=a;render()});
-  on("psv",saveProf);on("pcx",()=>{editProf=false;render()});
+  on("psv",saveProf);on("pcx",()=>{editProf=false;render()});on("pout",signOutUser);
+}
+function loginHtml(){
+  return `<form class="vip" id="lf"><h3>🔐 VIP Giriş</h3><p class="vsub">Okey masasına katılmak için giriş yap</p>${authErr?`<div class="verr">${esc(authErr)}</div>`:""}<label for="lu">Kullanıcı Adı</label><input id="lu" type="text" placeholder="Kullanıcı adın" value="${esc(loginU)}" autocomplete="username" autocapitalize="none" spellcheck="false"${authBusy?" disabled":""}><label for="lp">Şifre</label><input id="lp" type="password" placeholder="Şifren" autocomplete="current-password"${authBusy?" disabled":""}><button type="submit" class="mbtn gold" id="lgo"${authBusy?" disabled":""}><span><b>${authBusy?"Giriş yapılıyor…":"Giriş Yap"}</b></span></button></form><p class="ver">v${APP_VERSION}</p>`;
+}
+function bindLogin(){
+  const f=$("lf"),u=$("lu"),p=$("lp");
+  if(u)u.oninput=()=>{loginU=u.value};
+  if(f)f.onsubmit=async e=>{
+    e.preventDefault();if(authBusy||!fbAuth)return;
+    const raw=(u.value||"").replace(/\s+/g,"").toLowerCase(),pw=p.value||"";
+    loginU=u.value.trim();
+    if(!raw||!pw){authErr="Kullanıcı adı ve şifre gir.";render();return}
+    const email=raw.includes("@")?raw:raw+"@okey.local";
+    authBusy=true;authErr="";render();
+    try{await fbAuth.signInWithEmailAndPassword(email,pw)}
+    catch(err){
+      authBusy=false;
+      const c=err&&err.code||"";
+      if(c=="auth/too-many-requests")authErr="Çok fazla deneme, biraz bekle.";
+      else if(c=="auth/network-request-failed")authErr="Bağlantı hatası, internetini kontrol et.";
+      else if(c=="auth/user-disabled")authErr="Bu hesap devre dışı bırakılmış.";
+      else if(c=="auth/wrong-password"||c=="auth/user-not-found"||c=="auth/invalid-credential"||c=="auth/invalid-login-credentials"||c=="auth/invalid-email")authErr="Kullanıcı adı veya şifre hatalı.";
+      else authErr="Giriş yapılamadı, tekrar dene.";
+      render();
+    }
+  };
+}
+async function signOutUser(){
+  if(!fbAuth)return;
+  if(roomCode&&S)closeTable();else{unsubRoom();clearRoomState()}
+  editProf=false;prof=null;pf=null;menuMsg="";authErr="";joinVal="";pendingRoom="";
+  try{await fbAuth.signOut()}catch(e){}
 }
 const profCard=()=>`<div class="pbar" id="pedit" role="button" tabindex="0" aria-label="Profili düzenle"><span class="pavr">${avSvg(prof.av)}</span><span class="pnm"><b>${esc(prof.name)}</b><small class="pst">${prof.stats.games} maç · ${prof.stats.wins} galibiyet</small></span><svg class="pen" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19.5 8.5a2 2 0 0 0 0-2.8l-1.2-1.2a2 2 0 0 0-2.8 0L4 16v4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div>`;
 const bindProf=()=>{on("pedit",openProf);const e=$("pedit");if(e)e.onkeydown=k=>{if(k.key=="Enter"||k.key==" "){k.preventDefault();openProf()}}};
@@ -325,35 +391,134 @@ function T(id){return id>=104?{f:1,r:S.ok.r,n:S.ok.n}:{f:0,r:(id%52/13)|0,n:id%1
 const isJ=id=>id<104&&T(id).r==S.ok.r&&T(id).n==S.ok.n;
 function tl(id,x,st){const t=T(id),c=t.f?"#2a7a4f":COL[t.r];return `<div class="t${x||""}"${st?` style="${st}"`:""}><b style="color:${c}">${t.f?"★":t.n}</b><i style="background:${c}"></i></div>`}
 function jk(c,st){return `<div class="t jk${c||""}"${st?` style="${st}"`:""}></div>`}
-async function save(){S.v=(S.v||0)+1;lastK=key(S);render();try{await ref.set(S)}catch(e){note="Kaydedilemedi, masaya katkı yetkin olmayabilir.";render()}}
+const onlineReady=()=>!!(db&&fbUser);
+function getUrlRoom(){try{const c=new URLSearchParams(location.search).get("oda")||"";return /^\d{4}$/.test(c)?c:""}catch(e){return ""}}
+function setUrlRoom(c){try{const u=new URL(location.href);if(c)u.searchParams.set("oda",c);else u.searchParams.delete("oda");history.replaceState(null,"",u.pathname+u.search+u.hash)}catch(e){}}
+function getStoredRoom(){try{const c=sessionStorage.getItem("okeyRoom")||"";return /^\d{4}$/.test(c)?c:""}catch(e){return ""}}
+function setStoredRoom(c){try{if(c)sessionStorage.setItem("okeyRoom",c);else sessionStorage.removeItem("okeyRoom")}catch(e){}}
+function roomLink(){return location.origin+location.pathname+"?oda="+roomCode}
+function unsubRoom(){if(roomUnsub){try{roomUnsub()}catch(e){}roomUnsub=null}}
+function clearRoomState(){
+  timerStop();tLeft=50;clearTimeout(bt);bt=null;confirmExit=false;peek=-1;sel=null;note="";inv="";helpOpen=false;
+  flipped.clear();flipAnim=-1;dealKey=null;lastTap=[-1,0];lastEvn=-1;wasMine=false;doneSeen=false;slots=Array(NS).fill(null);
+  if(drag){if(drag.g)drag.g.remove();drag=null}
+  roomCode="";ref=LOCAL_REF;S=null;lastK="x";mySeat=-1;
+  setStoredRoom("");setUrlRoom("");
+}
+function attachRoom(code,data){
+  unsubRoom();
+  roomCode=code;ref=db.collection("rooms").doc(code);
+  setStoredRoom(code);setUrlRoom(code);
+  S=data;lastK=key(S);inv="";note="";menuMsg="";
+  roomUnsub=ref.onSnapshot(s=>{
+    if(!s.exists){unsubRoom();clearRoomState();menuMsg="Masa sahibi masayı kapattı.";render();return}
+    const d=s.data();
+    if(S&&key(d)===lastK)return;
+    lastK=key(d);S=d;render();
+  },()=>{note="Bağlantı kesildi, yeniden bağlanılıyor…";render()});
+  render();
+}
+async function save(){S.v=(S.v||0)+1;lastK=key(S);render();try{await ref.set(S)}catch(e){note="Kaydedilemedi, bağlantı sorunu olabilir.";render()}}
 async function init(){
-  const timer=setTimeout(()=>{$("app").textContent="Bağlanılamadı. Sayfayı giriş yaparak aç."},10000);
-  let user=null,db=null;
-  try{user=await claude.use("user");db=await claude.use("db");me=user?await user.id():null}catch(e){}
-  let old="";
-  try{const j=JSON.parse(localStorage.getItem("okeyProfile")||"null");if(j&&j.name)prof={name:String(j.name).slice(0,14),av:avid(j.avatarId),stats:nst(j.stats),lastDeal:String(j.lastDeal||"")};old=localStorage.getItem("okeyName")||""}catch(e){}
   try{lv=+localStorage.getItem("okeyLv")||0;muted=localStorage.getItem("okeySes")==="0";spd=localStorage.getItem("okeySpd")==="Hızlı"?1:0}catch(e){}
-  if(!prof){pf={name:old.slice(0,14),av:Math.random()*AVS.length|0};if(!pf.name&&user){try{const m=await user.me();if(m&&m.name)pf.name=m.name.slice(0,14)}catch(e){}}}
-  clearTimeout(timer);
-  if(!db||!me){local=true;me="yerel-"+Math.random().toString(36).slice(2);ref={set:async()=>{},delete:async()=>{}};render();return}
-  ref=db.doc("game/state");
-  ref.onSnapshot(s=>{const d=s.exists?s.data():null;if(S&&key(d)===lastK)return;lastK=key(d);S=d;render()},e=>{$("app").textContent="Bağlantı hatası: "+e.message});
+  if(!FB_CFG||typeof firebase==="undefined"){
+    local=true;authReady=true;ref=LOCAL_REF;
+    let old="";
+    try{const j=JSON.parse(localStorage.getItem("okeyProfile")||"null");if(j&&j.name)prof={name:String(j.name).slice(0,14),av:avid(j.avatarId),stats:nst(j.stats),lastDeal:String(j.lastDeal||"")};old=localStorage.getItem("okeyName")||""}catch(e){}
+    if(!prof)pf={name:old.slice(0,14),av:Math.random()*AVS.length|0};
+    me="yerel-"+Math.random().toString(36).slice(2);
+    render();return;
+  }
+  try{if(!firebase.apps.length)firebase.initializeApp(FB_CFG);fbAuth=firebase.auth();db=firebase.firestore()}
+  catch(e){local=true;authReady=true;ref=LOCAL_REF;me="yerel-"+Math.random().toString(36).slice(2);render();return}
+  pendingRoom=getUrlRoom()||getStoredRoom();
+  fbAuth.onAuthStateChanged(async user=>{
+    if(!user){
+      if(roomCode||S){unsubRoom();clearRoomState()}
+      fbUser=null;me=null;prof=null;pf=null;editProf=false;authReady=true;authBusy=false;
+      render();return;
+    }
+    fbUser=user;me=user.uid;local=false;authErr="";authBusy=false;
+    const defName=(user.email||"").split("@")[0].slice(0,14);
+    try{
+      const snap=await db.collection("profiles").doc(me).get();
+      if(snap.exists&&snap.data()&&snap.data().name){
+        const d=snap.data();
+        prof={name:String(d.name).slice(0,14),av:avid(d.avatarId),stats:nst(d.stats),lastDeal:String(d.lastDeal||"")};
+        saveLocalProf();
+      }else{prof=null;pf={name:defName,av:Math.random()*AVS.length|0}}
+    }catch(e){
+      try{const j=JSON.parse(localStorage.getItem("okeyProfile")||"null");if(j&&j.name&&j.uid===me)prof={name:String(j.name).slice(0,14),av:avid(j.avatarId),stats:nst(j.stats),lastDeal:String(j.lastDeal||"")}}catch(e2){}
+      if(!prof)pf={name:defName,av:Math.random()*AVS.length|0};
+    }
+    authReady=true;
+    if(prof&&pendingRoom&&!S){const c=pendingRoom;pendingRoom="";await joinRoom(c,true);return}
+    render();
+  });
 }
 function needName(){if(prof)return false;editProf=true;render();return true}
-function soloGame(){if(needName())return;S={ver:2,lv,phase:"lobby",host:me,seats:[{k:"h",u:me,n:nm(),av:prof.av},{k:"e"},{k:"e"},{k:"e"}],v:0};deal()}
-function newTable(){if(needName())return;S={ver:2,lv,phase:"lobby",host:me,seats:[{k:"h",u:me,n:nm(),av:prof.av},{k:"e"},{k:"e"},{k:"e"}],v:0};save()}
+function soloGame(){
+  if(needName())return;
+  unsubRoom();clearRoomState();menuMsg="";
+  S={ver:2,lv,phase:"lobby",host:me,seats:[{k:"h",u:me,n:nm(),av:prof.av},{k:"e"},{k:"e"},{k:"e"}],v:0};deal();
+}
+async function newTable(){
+  if(needName()||!onlineReady()||roomBusy)return;
+  roomBusy=true;menuMsg="";render();
+  try{
+    for(let t=0;t<12;t++){
+      const c=String(1000+Math.floor(Math.random()*9000));
+      const r=db.collection("rooms").doc(c);
+      const snap=await r.get();
+      if(!snap.exists){
+        const d={ver:2,lv,phase:"lobby",host:me,seats:[{k:"h",u:me,n:nm(),av:prof.av},{k:"e"},{k:"e"},{k:"e"}],v:1};
+        await r.set(d);roomBusy=false;attachRoom(c,d);return;
+      }
+    }
+    menuMsg="Oda oluşturulamadı, tekrar dene.";
+  }catch(e){menuMsg="Oda oluşturulamadı, bağlantını kontrol et."}
+  roomBusy=false;render();
+}
+async function joinRoom(code,isAuto){
+  const c=String(code||"").replace(/\D/g,"").slice(0,4);
+  if(!/^\d{4}$/.test(c)){if(!isAuto){menuMsg="4 haneli oda kodunu gir.";render()}return}
+  if(!onlineReady()||roomBusy)return;
+  roomBusy=true;menuMsg="";render();
+  try{
+    const snap=await db.collection("rooms").doc(c).get();
+    roomBusy=false;
+    if(!snap.exists||!snap.data()||snap.data().ver!==2){
+      setStoredRoom("");if(getUrlRoom()===c)setUrlRoom("");
+      menuMsg="Bu kodla açık masa bulunamadı.";render();return;
+    }
+    joinVal="";attachRoom(c,snap.data());
+  }catch(e){roomBusy=false;menuMsg="Odaya bağlanılamadı, bağlantını kontrol et.";render()}
+}
 function sit(i){if(needName())return;S=cl(S);S.seats[i]={k:"h",u:me,n:nm(),av:prof.av};save()}
 function openExit(){clearTimeout(bt);bt=null;timerStop();confirmExit=true;render()}
 function closeTable(){
-  timerStop();tLeft=50;clearTimeout(bt);bt=null;confirmExit=false;peek=-1;sel=null;note="";inv="";helpOpen=false;
-  flipped.clear();flipAnim=-1;dealKey=null;lastTap=[-1,0];slots=Array(NS).fill(null);
-  if(drag){if(drag.g)drag.g.remove();drag=null}
-  S=null;lastK="x";render();
-  ref.delete().catch(()=>{});
+  const curS=S,curRef=ref,curCode=roomCode,curSeat=mySeat;
+  unsubRoom();clearRoomState();render();
+  if(!curCode||!curS)return;
+  if(curS.host===me){curRef.delete().catch(()=>{});return}
+  if(curSeat>=0){
+    const next=cl(curS);
+    if(next.phase=="lobby")next.seats[curSeat]={k:"e"};
+    else{const o=next.seats[curSeat]||{};next.seats[curSeat]={k:"b",n:o.n||"Bot",av:o.av==null?curSeat:o.av}}
+    next.v=(next.v||0)+1;
+    curRef.set(next).catch(()=>{});
+  }
 }
 async function invite(){
-  try{if(navigator.share){await navigator.share({title:"Okey Masası",text:"Okey oynayalım, masaya gel!",url:LINK});return}}catch(e){if(e&&e.name=="AbortError")return}
-  try{await navigator.clipboard.writeText(LINK);inv="Bağlantı kopyalandı, arkadaşlarına gönder."}catch(e){inv="Bağlantı: "+LINK}
+  if(!roomCode)return;
+  const url=roomLink();
+  try{if(navigator.share){await navigator.share({title:"Okey Masası",text:"Okey oynayalım! Oda kodu: "+roomCode,url});return}}catch(e){if(e&&e.name=="AbortError")return}
+  try{await navigator.clipboard.writeText(url);inv="Oda bağlantısı kopyalandı, arkadaşlarına gönder."}catch(e){inv="Bağlantı: "+url}
+  render();
+}
+async function copyCode(){
+  if(!roomCode)return;
+  try{await navigator.clipboard.writeText(roomCode);inv="Oda kodu kopyalandı: "+roomCode}catch(e){inv="Oda kodu: "+roomCode}
   render();
 }
 function deal(){
@@ -622,28 +787,35 @@ function helpHtml(){return `<div class="help"><h3>Nasıl oynanır?</h3><ol>
 <li>Bot zorluğunu menüden seç: Kolay bot rastgele oynar, Orta bot işine yarayan taşları tutar, Zor bot elini en çok ilerleten hamleyi arar ve senin attığın taşı da alabilir. Bot hızını da Normal ya da Hızlı olarak ayarlayabilirsin.</li>
 <li>Botları masayı kuran kişinin sayfası oynatır, o yüzden masa sahibi sayfayı kapatmasın.</li>
 </ol><button class="mbtn gold" id="hx"><span><b>Tamam</b></span></button></div>`}
-function scr(m){if(m!="play")timerStop();document.body.className=m=="play"?"play":"menu";$("head").hidden=!(m=="menu"||m=="lobby")}
+function scr(m){if(m!="play")timerStop();document.body.className=m=="play"?"play":"menu";$("head").hidden=!(m=="menu"||m=="lobby"||m=="login")}
 const on=(id,f)=>{if($(id))$(id).onclick=f};
 const helpOn=()=>{helpOpen=true;clearTimeout(bt);bt=null;timerStop();render()};
 function render(){
   const app=$("app");
   if(drag&&drag.moved)return;
+  if(!authReady){scr("login");app.innerHTML='<p class="wait">Bağlanıyor…</p>';return}
+  if(FB_CFG&&typeof firebase!=="undefined"&&!fbUser){scr("login");app.innerHTML=loginHtml();bindLogin();return}
   if(helpOpen){clearTimeout(bt);bt=null;scr("help");app.innerHTML=helpHtml();on("hx",()=>{helpOpen=false;render()});return}
   if(!prof||editProf){scr("prof");app.innerHTML=profHtml();bindProfScr();return}
   if(!S||S.ver!==2){
     scr("menu");inLobby=true;wasMine=doneSeen=false;confirmExit=false;
-    app.innerHTML=`${profCard()}${segHtml()}<div class="menu"><button class="mbtn" id="m1"><span class="mi">🤖</span><span><b>Botlarla oyna</b><small>Hemen başla, üç bot seninle oynar</small></span></button><button class="mbtn gold" id="m2"${local?" disabled":""}><span class="mi">👥</span><span><b>Arkadaşlarımla oyna</b><small>${local?"Bu dosyada çalışmaz, Claude bağlantısından aç":"Masa kur ve bağlantıyı gönder"}</small></span></button><div class="lrow"><button class="link" id="m3">Nasıl oynanır?</button><button class="link" id="sm">${sndLabel()}</button></div></div><p class="ver">v${APP_VERSION}</p>`;
-    bindProf();bindLv();on("sm",toggleSnd);on("m1",soloGame);on("m2",newTable);on("m3",helpOn);return;
+    const onl=onlineReady();
+    app.innerHTML=`${profCard()}${menuMsg?`<div class="merr">${esc(menuMsg)}</div>`:""}${segHtml()}<div class="menu"><button class="mbtn" id="m1"><span class="mi">🤖</span><span><b>Botlarla oyna</b><small>Hemen başla, üç bot seninle oynar</small></span></button><button class="mbtn gold" id="m2"${!onl||roomBusy?" disabled":""}><span class="mi">🌐</span><span><b>Masa Kur (Online)</b><small>${!onl?"Çevrimdışı modda kullanılamaz":roomBusy?"Masa hazırlanıyor…":"4 haneli oda kodu oluştur ve davet et"}</small></span></button><div class="jbar"><input id="jcode" type="text" inputmode="numeric" maxlength="4" placeholder="Oda kodu (4 hane)" value="${esc(joinVal)}" autocomplete="off"${!onl||roomBusy?" disabled":""}><button id="jgo"${!onl||roomBusy?" disabled":""}>Katıl</button></div><div class="lrow"><button class="link" id="m3">Nasıl oynanır?</button><button class="link" id="sm">${sndLabel()}</button></div></div><p class="ver">v${APP_VERSION}</p>`;
+    bindProf();bindLv();on("sm",toggleSnd);on("m1",soloGame);on("m2",newTable);on("m3",helpOn);
+    const jc=$("jcode");
+    if(jc){jc.oninput=()=>{jc.value=jc.value.replace(/\D/g,"").slice(0,4);joinVal=jc.value};jc.onkeydown=e=>{if(e.key=="Enter")joinRoom(jc.value)}}
+    on("jgo",()=>joinRoom(jc?jc.value:joinVal));
+    return;
   }
   mySeat=S.seats.findIndex(x=>x.u===me);
   if(S.phase=="lobby"){
     scr("lobby");inLobby=true;wasMine=doneSeen=false;confirmExit=false;
     const pos=["b","r","t","l"],cnt=S.seats.filter(s=>s.k!="e").length;
     const card=(s,i)=>`<div class="sp ${pos[i]}${s.k=="e"?" empty":""}"><span class="av${s.k=="e"?" e":""}">${s.k=="e"?"+":avOf(s,i)}</span><b>${s.k=="e"?"Boş koltuk":esc(s.n)}</b>${s.u===S.host?"<small>masa sahibi</small>":""}${s.u===me?"<small>sen</small>":""}${s.k=="e"&&mySeat<0?`<button class="sit" data-i="${i}">Otur</button>`:""}</div>`;
-    app.innerHTML=`${profCard()}<div class="cross">${S.seats.map(card).join("")}<div class="c"><b>${cnt}/4</b><small>oyuncu</small></div></div>
-    ${segHtml()}<div class="menu">${S.host===me?`<button class="mbtn gold" id="go"><span class="mi">▶</span><span><b>Başlat</b><small>${cnt<4?"Boş koltuklara bot gelir":"Masa dolu"}</small></span></button>`:`<p class="wait">Masa sahibinin başlatması bekleniyor…</p>`}${mySeat>=0?`<button class="mbtn" id="iv"><span class="mi">🔗</span><span><b>Arkadaşını davet et</b><small>Bağlantıyı gönder, düzenleme yetkisiyle açsınlar</small></span></button>`:""}<button class="link" id="hp">Nasıl oynanır?</button><button class="link" id="sm">${sndLabel()}</button>${S.host===me?`<button class="link" id="cm">Masayı iptal et</button>`:""}</div>${inv?`<p class="wait">${esc(inv)}</p>`:""}`;
+    app.innerHTML=`${profCard()}${roomCode?`<div class="rcode" id="rcopy" role="button" tabindex="0" title="Oda kodunu kopyala"><small>ODA KODU</small><b>${esc(roomCode)}</b></div>`:""}<div class="cross">${S.seats.map(card).join("")}<div class="c"><b>${cnt}/4</b><small>oyuncu</small></div></div>
+    ${segHtml()}<div class="menu">${S.host===me?`<button class="mbtn gold" id="go"><span class="mi">▶</span><span><b>Başlat</b><small>${cnt<4?"Boş koltuklara bot gelir":"Masa dolu"}</small></span></button>`:`<p class="wait">Masa sahibinin başlatması bekleniyor…</p>`}${roomCode?`<button class="mbtn" id="iv"><span class="mi">🔗</span><span><b>Arkadaşını davet et</b><small>Oda bağlantısını paylaş veya kopyala</small></span></button>`:""}<div class="lrow"><button class="link" id="hp">Nasıl oynanır?</button><button class="link" id="sm">${sndLabel()}</button></div><button class="link" id="cm">${S.host===me?"Masayı iptal et":"Odadan ayrıl"}</button></div>${inv?`<p class="wait">${esc(inv)}</p>`:""}`;
     app.querySelectorAll(".sit").forEach(b=>b.onclick=()=>sit(+b.dataset.i));
-    bindProf();bindLv();on("sm",toggleSnd);on("go",deal);on("iv",invite);on("hp",helpOn);on("cm",closeTable);return;
+    bindProf();bindLv();on("sm",toggleSnd);on("go",deal);on("iv",invite);on("hp",helpOn);on("cm",closeTable);on("rcopy",copyCode);const rc=$("rcopy");if(rc)rc.onkeydown=k=>{if(k.key=="Enter"||k.key==" "){k.preventDefault();copyCode()}};return;
   }
   scr("play");
   const v=mySeat<0?0:mySeat,R=k=>(v+k)%4,h=S.hands[v]||[];
@@ -664,7 +836,7 @@ function render(){
     if(x!=null&&!dn){if(anim){c+=" dealin";stl=`animation-delay:${(idx++)*35}ms`}else if(!known.has(x))c+=" fresh";if(flipAnim===x)c+=" flipin"}
     return `<div class="s${sel===i&&!dn?" sel":""}" tabindex="0" data-i="${i}">${x!=null?(!myWin&&flipped.has(x)&&isJ(x)?jk(c,stl):tl(x,c,stl)):""}</div>`}).join("");
   const dcls=id=>seenD.has(id)?"":" drop";
-  const hostBtns=S.host===me?`<button class="mb2" id="nw">Yeni el</button><button class="mb2 alt" id="cm">Ana menü</button>`:`<small>Yeni eli masa sahibi başlatır</small>`;
+  const hostBtns=S.host===me?`<button class="mb2" id="nw">Yeni el</button><button class="mb2 alt" id="cm">Ana menü</button>`:`<small>Yeni eli masa sahibi başlatır</small><button class="mb2 alt" id="cm">Ana menü</button>`;
   let win="";
   if(dn){
     const btns=`<span class="wb">${hostBtns}</span>`;
@@ -688,8 +860,9 @@ function render(){
     return `<div class="pile ${pos}${mine?" mydisc"+(armed?" armed":""):""}${d.length?"":" empty"}" data-p="${i}">${tiles}</div>`;
   };
   const pl=(i,cls)=>`<div class="edge ${cls}${S.turn==i&&S.phase=="play"?" act":""}"><div class="plate">${pav(S.seats[i],i)}<span class="pn">${esc(S.seats[i].n)}${S.seats[i].k=="b"?" · bot":""}</span></div><div class="tops">${"<i></i>".repeat(S.hands[i].length)}</div></div>`;
+  const exitMsg=S.host===me?"Maçı iptal edip ana ekrana dönmek istiyor musun?":(roomCode&&mySeat>=0?"Masadan ayrılmak istiyor musun? Yerine bot devam edecek.":"Ana menüye dönmek istiyor musun?");
   app.innerHTML=`<div class="stage">
-   <button class="hbtn" id="hp">?</button><button class="hbtn sbtn" id="sb">${muted?"🔇":"🔊"}</button>${S.host===me?`<button class="hbtn xbtn" id="xb" aria-label="Ana menü">🏠</button>`:""}
+   <button class="hbtn" id="hp">?</button><button class="hbtn sbtn" id="sb">${muted?"🔇":"🔊"}</button>${mySeat>=0||S.host===me||roomCode?`<button class="hbtn xbtn" id="xb" aria-label="Ana menü">🏠</button>`:""}
    ${pl(R(2),"etop")}${pl(R(3),"eleft")}${pl(R(1),"eright")}
    ${P(R(2),"ptl")}${P(R(1),"ptr")}${P(R(3),"pbl")}${P(v,"pbr",mySeat>=0)}
    <div class="mid3">
@@ -700,7 +873,7 @@ function render(){
    <div id="msg"${S.phase=="done"?" hidden":""}>${S.ev?esc(S.ev)+" · ":""}${st}${note?" "+esc(note):""}</div>
    ${mySeat<0?`<div class="spec">İzleyicisin</div>`:`<div class="me${myTurn()?" act":""}"><div class="plate">${pav(S.seats[mySeat],mySeat)}<span class="pn">${esc(S.seats[mySeat].n)}</span></div>${myTurn()?`<span id="tm" class="tmr">⏱ ${tLeft}</span>`:""}</div><div id="rack"${myWin?` class="won"`:""}>${rackHtml}</div>`}
    ${win}
-   ${confirmExit?`<div class="ov xov"><div class="win"><b>Maçı iptal edip ana ekrana dönmek istiyor musun?</b><span class="wb"><button class="mb2" id="xno">Vazgeç</button><button class="mb2 alt" id="xyes">Evet, çık</button></span></div></div>`:""}
+   ${confirmExit?`<div class="ov xov"><div class="win"><b>${exitMsg}</b><span class="wb"><button class="mb2" id="xno">Vazgeç</button><button class="mb2 alt" id="xyes">Evet, çık</button></span></div></div>`:""}
    ${peek>=0?`<div class="ov pkov"><div class="win"><b>${esc(S.seats[peek].n)}</b><div class="pk">${S.disc[peek].map(id=>tl(id)).join("")||"Henüz taş atmadı"}</div></div></div>`:""}
   </div>`;
   const nd=[0,1,2,3].reduce((a,i)=>a+S.disc[i].filter(id=>!seenD.has(id)).length,0);

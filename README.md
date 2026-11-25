@@ -2,7 +2,7 @@
 
 Tarayıcıda hiçbir kurulum gerektirmeden oynanabilen, mobil ve masaüstü uyumlu **4 kişilik klasik Türk Okey** oyunu. Tek bir `index.html` dosyasında sıfır bağımlılıkla çalışır.
 
-![Durum](https://img.shields.io/badge/sürüm-v0.3.3-e0a82e?style=flat-square)
+![Durum](https://img.shields.io/badge/sürüm-v0.3.5-e0a82e?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-Web%20%7C%20Mobil-1b6a45?style=flat-square)
 ![Teknoloji](https://img.shields.io/badge/teknoloji-HTML%20%7C%20CSS%20%7C%20JS-1f5fbf?style=flat-square)
 

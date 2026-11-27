@@ -2,7 +2,7 @@
 
 Tarayıcıda hiçbir kurulum gerektirmeden oynanabilen, mobil ve masaüstü uyumlu **4 kişilik klasik Türk Okey** oyunu. Tek bir `index.html` dosyasında sıfır bağımlılıkla çalışır.
 
-![Durum](https://img.shields.io/badge/sürüm-v0.3.5-e0a82e?style=flat-square)
+![Durum](https://img.shields.io/badge/sürüm-v0.4.2-e0a82e?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-Web%20%7C%20Mobil-1b6a45?style=flat-square)
 ![Teknoloji](https://img.shields.io/badge/teknoloji-HTML%20%7C%20CSS%20%7C%20JS-1f5fbf?style=flat-square)
 
@@ -10,7 +10,7 @@ Tarayıcıda hiçbir kurulum gerektirmeden oynanabilen, mobil ve masaüstü uyum
 
 ---
 
-## ✨ Mevcut Özellikler (`v0.3.0`)
+## ✨ Mevcut Özellikler (`v0.4.2`)
 
 - **3 Seviye Yapay Zekâ Bot:** Kolay (rastgele), Orta (işe yarayan taşları tutan) ve Zor (en yüksek per kombinasyonunu hesaplayıp yandan taş alabilen) botlar.
 - **Sıfır Dosyalı Taş Sesleri:** Web Audio API ile anlık üretilen taş çekme, atma, karıştırma ve bitiş ses efektleri (ses aç/kapa destekli).
@@ -23,10 +23,10 @@ Tarayıcıda hiçbir kurulum gerektirmeden oynanabilen, mobil ve masaüstü uyum
 ## 🗺️ Yol Haritası
 
 - [x] **v0.3.0** — Temel oyun motoru, bot zorlukları, sesler ve GitHub Pages yayını
-- [ ] **v0.3.1** — Maç içi ana menüye dönüş butonu, onay penceresi ve hata düzeltmeleri
-- [ ] **v0.3.2** — Tek seferlik profil sistemi ve rastgele SVG avatarlar
-- [ ] **v0.3.3** — 50 saniye hamle süresi, kazanan elin ekranda sergilenmesi ve `12-13-1` seri desteği
-- [ ] **v0.4.0** — Oda koduyla arkadaşlarla canlı (online) oynama
+- [x] **v0.3.1** — Maç içi ana menüye dönüş butonu, onay penceresi ve hata düzeltmeleri
+- [x] **v0.3.2** — Tek seferlik profil sistemi ve rastgele SVG avatarlar
+- [x] **v0.3.3** — 50 saniye hamle süresi, kazanan elin ekranda sergilenmesi ve `12-13-1` seri desteği
+- [x] **v0.4.0** — Oda koduyla arkadaşlarla canlı (online) oynama
 - [ ] **v1.0.0** — PWA ("Ana Ekrana Ekle") desteği ve kararlı web çıkışı
 
 ---
